@@ -2,21 +2,32 @@
 
 import { useState } from 'react';
 import * as Tone from 'tone';
+import { solfegeNotes } from './config';
 
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
 
-  const midiNotes = [
-    { noteName: "E4", duration: "2n" },
-    { noteName: "D4", duration: "8n" },
-    { noteName: "C4", duration: "8n" },
-    { noteName: "D4", duration: "8n" },
-    { noteName: "E4", duration: "8n" },
-    { noteName: "F4", duration: "8n" },
-    { noteName: "E4", duration: "8n" },
-    { noteName: "D4", duration: "8n" },
-  ];
+  // do re mi 對應表（C大調）
+  const solfegeMap: Record<string, string> = {
+    do: 'C',
+    re: 'D',
+    mi: 'E',
+    fa: 'F',
+    sol: 'G',
+    la: 'A',
+    ti: 'B',
+  };
+
+  // 將 do4、re4 轉換為 Tone.js 使用的格式
+  const convertSolfegeToNote = (solfegeNote: string): string => {
+    const match = solfegeNote.match(/([a-z]+)(\d)/i);
+    if (!match) return solfegeNote;
+
+    const [, name, octave] = match;
+    const pitch = solfegeMap[name.toLowerCase()];
+    return pitch ? `${pitch}${octave}` : solfegeNote;
+  };
 
   const loadAndPlayMidi = async () => {
     await Tone.start();
@@ -29,20 +40,19 @@ export default function Home() {
     let currentTime = 0;
 
     const part = new Tone.Part((time, note) => {
-      synth.triggerAttackRelease(note.noteName, note.duration, time);
-      // 使用 Tone.Transport.schedule 的時間同步顯示
+      const actualNote = convertSolfegeToNote(note.noteName);
+      synth.triggerAttackRelease(actualNote, note.duration, time);
       Tone.Draw.schedule(() => {
-        setNotes((prev) => [...prev, note.noteName]);
+        setNotes((prev) => [...prev, actualNote]);
       }, time);
-    }, midiNotes.map((note) => {
+    }, solfegeNotes.map((note) => {
       const event = { time: currentTime, ...note };
       currentTime += Tone.Time(note.duration).toSeconds();
       return event;
     }));
 
-    part.start(0); // 從 Transport 時間 0 開始
+    part.start(0);
 
-    // 播放結束時解除鎖定按鈕
     Tone.Transport.scheduleOnce(() => {
       setIsPlaying(false);
     }, currentTime);
