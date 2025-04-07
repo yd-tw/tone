@@ -2,37 +2,52 @@
 
 import { useState } from 'react';
 import * as Tone from 'tone';
-import { Midi } from '@tonejs/midi';
 
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
 
+  const midiNotes = [
+    { noteName: "E4", duration: "2n" },
+    { noteName: "D4", duration: "8n" },
+    { noteName: "C4", duration: "8n" },
+    { noteName: "D4", duration: "8n" },
+    { noteName: "E4", duration: "8n" },
+    { noteName: "F4", duration: "8n" },
+    { noteName: "E4", duration: "8n" },
+    { noteName: "D4", duration: "8n" },
+  ];
+
   const loadAndPlayMidi = async () => {
-    const res = await fetch('/song2.mid');
-    const arrayBuffer = await res.arrayBuffer();
-    const midi = new Midi(arrayBuffer);
-  
-    const transport = Tone.getTransport();
-  
-    midi.tracks.forEach((track) => {
-      track.notes.forEach((note) => {
-        transport.scheduleOnce((time) => {
-          const synth = new Tone.Synth().toDestination();
-          synth.triggerAttackRelease(note.name, note.duration, time);
-  
-          setNotes((prev) => {
-            const updated = [...prev, note.name];
-            return updated.slice(-100);
-          });
-        }, note.time);
-      });
-    });
-  
     await Tone.start();
-    transport.bpm.value = midi.header.tempos[0]?.bpm || 120;
-    transport.start();
     setIsPlaying(true);
+    setNotes([]);
+
+    const synth = new Tone.Synth().toDestination();
+    Tone.Transport.cancel(); // 清空前一次排程
+
+    let currentTime = 0;
+
+    const part = new Tone.Part((time, note) => {
+      synth.triggerAttackRelease(note.noteName, note.duration, time);
+      // 使用 Tone.Transport.schedule 的時間同步顯示
+      Tone.Draw.schedule(() => {
+        setNotes((prev) => [...prev, note.noteName]);
+      }, time);
+    }, midiNotes.map((note) => {
+      const event = { time: currentTime, ...note };
+      currentTime += Tone.Time(note.duration).toSeconds();
+      return event;
+    }));
+
+    part.start(0); // 從 Transport 時間 0 開始
+
+    // 播放結束時解除鎖定按鈕
+    Tone.Transport.scheduleOnce(() => {
+      setIsPlaying(false);
+    }, currentTime);
+
+    Tone.Transport.start();
   };
 
   return (
@@ -49,7 +64,7 @@ export default function Home() {
       <div className="mt-6">
         <h2 className="text-xl">目前播放的音符：</h2>
         <div className="flex gap-2 mt-2 flex-wrap">
-          {notes.slice(-15).map((note, idx) => (
+          {notes.slice(-10).map((note, idx) => (
             <span
               key={idx}
               className="bg-yellow-200 text-black px-2 py-1 rounded"
