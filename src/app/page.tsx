@@ -39,7 +39,7 @@ export default function Home() {
     const transport = Tone.getTransport();
     transport.cancel();
     transport.timeSignature = [6, 8];
-    transport.bpm.value = 120;
+    transport.bpm.value = 90;
     let currentTime = 0;
 
     const part = new Tone.Part((time, note) => {
@@ -78,7 +78,7 @@ export default function Home() {
       <div className="mt-6">
         <h2 className="text-xl">目前播放的音符：</h2>
         <div className="flex gap-2 mt-2 flex-wrap">
-          {notes.slice(-10).map((note, idx) => (
+          {notes.slice(-1).map((note, idx) => (
             <span
               key={idx}
               className="bg-yellow-200 text-black px-2 py-1 rounded text-xl"
