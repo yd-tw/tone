@@ -1,4 +1,5 @@
 export const solfegeNotes = [
+  //1-1
   { noteName: "mi4", duration: "4n" },
   { noteName: "re4", duration: "8n" },
   { noteName: "do4", duration: "4n" },
@@ -15,7 +16,7 @@ export const solfegeNotes = [
   { noteName: "fa4", duration: "16n" },
   { noteName: "mi4", duration: "8n" },
   { noteName: "re4", duration: "4n." },
-
+  //1-2
   { noteName: "mi4", duration: "4n" },
   { noteName: "re4", duration: "8n" },
   { noteName: "do4", duration: "4n" },
@@ -34,7 +35,7 @@ export const solfegeNotes = [
   { noteName: "re4", duration: "4n" },
   { noteName: "do4", duration: "8n" },
   { noteName: "do4", duration: "8n" },
-
+  //1-3
   { noteName: "mi4", duration: "8n" },
   { noteName: "mi4", duration: "8n" },
   { noteName: "re4", duration: "8n" },
@@ -56,4 +57,43 @@ export const solfegeNotes = [
   { noteName: "mi4", duration: "4n" },
   { noteName: "sol4", duration: "4n" },
   { noteName: "do5", duration: "4n" },
+  //1-4
+  { noteName: "ti4", duration: "4n" }, 
+  { noteName: "do5", duration: "8n" }, 
+  { noteName: "ti4", duration: "4n" }, 
+  { noteName: "do5", duration: "8n" }, 
+  { noteName: "ti4", duration: "16n" }, 
+  { noteName: "la4", duration: "16n" }, 
+  { noteName: "sol4", duration: "4n" }, 
+  { noteName: "sol4", duration: "8n" }, 
+  { noteName: "re4", duration: "8n" }, 
+  { noteName: "fa4", duration: "8n" }, 
+  { noteName: "fa4", duration: "4n" }, 
+  { noteName: "mi4", duration: "8n" }, 
+  { noteName: "mi4", duration: "4n" }, 
+  { noteName: "sol3", duration: "8n" }, 
+  { noteName: "fa4", duration: "8n" }, 
+  { noteName: "mi4", duration: "8n" }, 
+  { noteName: "re4", duration: "8n" }, 
+  { noteName: "mi4", duration: "4n" }, 
+  { noteName: "sol4", duration: "8n" },
+  //1-5
+  { noteName: "do4", duration: "4n." }, 
+  { noteName: "rest", duration: "4n." }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "re4", duration: "8n" }, 
+  { noteName: "do4", duration: "8n." }, 
+  { noteName: "ti3", duration: "16n" }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "sol4", duration: "8n" }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "fa4", duration: "4n" }, 
+  { noteName: "mi4", duration: "8n" }, 
+  { noteName: "re4", duration: "8n" }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "do4", duration: "4n." }, 
+  { noteName: "rest", duration: "4n" }, 
+  { noteName: "do4", duration: "8n" }, 
+  { noteName: "re4", duration: "8n" } 
 ];

@@ -14,6 +14,10 @@ export default function Home() {
     setNoteSequence([...noteSequence, { noteName: noteWithOctave, duration: selectedDuration }])
   }
 
+  const removeLastNote = () => {
+    setNoteSequence(noteSequence.slice(0, -1))
+  }
+
   return (
     <main className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">音符配置工具</h1>
@@ -33,7 +37,7 @@ export default function Home() {
         </select>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-4">
         {notesMap.map((note) => (
           <button
             key={note}
@@ -43,6 +47,15 @@ export default function Home() {
             {note}
           </button>
         ))}
+      </div>
+
+      <div className="mb-6">
+        <button
+          onClick={removeLastNote}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          刪除上一個音符
+        </button>
       </div>
 
       <div>
