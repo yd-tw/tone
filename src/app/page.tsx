@@ -29,20 +29,22 @@ export default function Home() {
     return pitch ? `${pitch}${octave}` : solfegeNote;
   };
 
-  const loadAndPlayMidi = async () => {
+  const playMusic = async () => {
     await Tone.start();
     setIsPlaying(true);
     setNotes([]);
 
     const synth = new Tone.Synth().toDestination();
-    Tone.Transport.cancel(); // 清空前一次排程
-
+    const transport = Tone.getTransport();
+    transport.cancel();
+    transport.bpm.value = 120;
     let currentTime = 0;
 
     const part = new Tone.Part((time, note) => {
       const actualNote = convertSolfegeToNote(note.noteName);
       synth.triggerAttackRelease(actualNote, note.duration, time);
-      Tone.Draw.schedule(() => {
+      const draw = Tone.getDraw();
+      draw.schedule(() => {
         setNotes((prev) => [...prev, actualNote]);
       }, time);
     }, solfegeNotes.map((note) => {
@@ -53,11 +55,11 @@ export default function Home() {
 
     part.start(0);
 
-    Tone.Transport.scheduleOnce(() => {
+    transport.scheduleOnce(() => {
       setIsPlaying(false);
     }, currentTime);
 
-    Tone.Transport.start();
+    transport.start();
   };
 
   return (
@@ -65,7 +67,7 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-4">🎵 音樂播放器</h1>
       <button
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={loadAndPlayMidi}
+        onClick={playMusic}
         disabled={isPlaying}
       >
         播放音樂
@@ -77,7 +79,7 @@ export default function Home() {
           {notes.slice(-10).map((note, idx) => (
             <span
               key={idx}
-              className="bg-yellow-200 text-black px-2 py-1 rounded"
+              className="bg-yellow-200 text-black px-2 py-1 rounded text-xl"
             >
               {note}
             </span>
