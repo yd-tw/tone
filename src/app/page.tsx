@@ -37,6 +37,7 @@ export default function Home() {
     const synth = new Tone.Synth().toDestination();
     const transport = Tone.getTransport();
     transport.cancel();
+    transport.timeSignature = [6, 8];
     transport.bpm.value = 120;
     let currentTime = 0;
 
