@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-const notesMap = ['sol3', 'ti3', 'do4', 're4', 'mi4', 'fa4', 'sol4', 'la4', 'ti4', 'do5', 're5', 'mi5', 'fa5']
-const noteDurations = ['4n', '8n', '16n', '4n.', '8n.', '16n.']
+const notesMap = ['sol3', 'ti3', 'do4', 're4', 'mi4', 'fa4', 'sol4', 'la4', 'ti4', 'do5', 're5', 'mi5', 'fa5', 'rest']
+const noteDurations = ['2n','4n', '8n', '16n', '2n.', '4n.', '8n.', '16n.']
 
 export default function Home() {
   const [selectedDuration, setSelectedDuration] = useState('4n')
@@ -48,7 +48,7 @@ export default function Home() {
       <div>
         <h2 className="text-xl font-semibold mb-2">目前的音符配置：</h2>
         <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-          {JSON.stringify(noteSequence, null, 2)}
+        {`[ \n  ${noteSequence.map(note => `{ noteName: "${note.noteName}", duration: "${note.duration}" }`).join(', \n  ')} \n]`}
         </pre>
       </div>
     </main>

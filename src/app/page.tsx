@@ -17,6 +17,7 @@ export default function Home() {
     sol: 'G',
     la: 'A',
     ti: 'B',
+    rest: 'rest',
   };
 
   // 將 do4、re4 轉換為 Tone.js 使用的格式
