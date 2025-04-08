@@ -3,32 +3,11 @@
 import { useState } from 'react';
 import * as Tone from 'tone';
 import { solfegeNotes } from './config';
+import { convertSolfegeToNote } from '@/utils/encoder';
 
-export default function Home() {
+export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
-
-  // do re mi 對應表（C大調）
-  const solfegeMap: Record<string, string> = {
-    do: 'C',
-    re: 'D',
-    mi: 'E',
-    fa: 'F',
-    sol: 'G',
-    la: 'A',
-    ti: 'B',
-    rest: 'rest',
-  };
-
-  // 將 do4、re4 轉換為 Tone.js 使用的格式
-  const convertSolfegeToNote = (solfegeNote: string): string => {
-    const match = solfegeNote.match(/([a-z]+)(\d)/i);
-    if (!match) return solfegeNote;
-
-    const [, name, octave] = match;
-    const pitch = solfegeMap[name.toLowerCase()];
-    return pitch ? `${pitch}${octave}` : solfegeNote;
-  };
 
   const playMusic = async () => {
     await Tone.start();
