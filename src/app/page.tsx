@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import * as Tone from 'tone';
-import { solfegeNotes } from './config';
-import { convertNoteToSolfege, convertSolfegeToNote } from '@/utils/encoder';
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+import * as Tone from "tone";
+import { solfegeNotes } from "@/config/notes";
+import { convertNoteToSolfege, convertSolfegeToNote } from "@/utils/encoder";
 
-const socket = io('https://socket.zeabur.app');
+const socket = io("https://socket.zeabur.app");
 
 export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,8 +19,8 @@ export default function Page() {
   };
 
   const playMusic = async () => {
-    setCurrentIndex(-1);
     setIsPlaying(true);
+    setCurrentIndex(-1);
 
     const synth = new Tone.Synth().toDestination();
     const transport = Tone.getTransport();
@@ -31,25 +31,21 @@ export default function Page() {
 
     let currentTime = 0;
 
-    const part = new Tone.Part((time, note) => {
-      const draw = Tone.getDraw();
+    const part = new Tone.Part(
+      (time, note) => {
+        const draw = Tone.getDraw();
+        draw.schedule(() => setCurrentIndex((prev) => prev + 1), time);
 
-      if (note.noteName !== "rest") {
-        const actualNote = convertSolfegeToNote(note.noteName);
-        synth.triggerAttackRelease(actualNote, note.duration, time);
-        draw.schedule(() => {
-          setCurrentIndex((prev) => prev + 1);
-        }, time);
-      } else {
-        draw.schedule(() => {
-          setCurrentIndex((prev) => prev + 1);
-        }, time);
-      }
-    }, solfegeNotes.map((note) => {
-      const event = { time: currentTime, ...note };
-      currentTime += Tone.Time(note.duration).toSeconds();
-      return event;
-    }));
+        if (note.noteName !== "rest") {
+          const actualNote = convertSolfegeToNote(note.noteName);
+          synth.triggerAttackRelease(actualNote, note.duration, time);
+        }
+      },
+      solfegeNotes.map((note) => ({
+        ...note,
+        time: (currentTime += Tone.Time(note.duration).toSeconds()),
+      })),
+    );
 
     part.start(0);
 
@@ -62,18 +58,14 @@ export default function Page() {
   };
 
   const handlePlay = () => {
-    socket.emit('play-request', { triggeredAt: Date.now() });
+    socket.emit("play-request", { triggeredAt: Date.now() });
   };
 
   useEffect(() => {
     if (!isReady) return;
-
-    socket.on('play', () => {
-      playMusic();
-    });
-
+    socket.on("play", playMusic);
     return () => {
-      socket.off('play');
+      socket.off("play");
     };
   }, [isReady]);
 
@@ -81,42 +73,31 @@ export default function Page() {
     <main className="p-4">
       <h1 className="text-2xl font-bold mb-4">🎵 音樂播放器</h1>
 
-      {!isReady ? (
-        <button
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-          onClick={prepareAudio}
-        >
-          加入等待
-        </button>
-      ) : (
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-          onClick={handlePlay}
-          disabled={isPlaying}
-        >
-          開始演奏
-        </button>
-      )}
+      <button
+        className={`px-4 py-2 rounded text-white ${isReady ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}`}
+        onClick={isReady ? handlePlay : prepareAudio}
+        disabled={isPlaying}
+      >
+        {isReady ? "開始演奏" : "加入等待"}
+      </button>
 
       <div className="mt-6">
         <h2 className="text-xl">目前播放的音符：</h2>
         <div className="flex gap-2 mt-2 flex-wrap">
           {[0, 1, 2].map((offset) => {
-            const noteIndex = currentIndex + offset;
-            const note = solfegeNotes[noteIndex];
-
+            const index = currentIndex + offset;
+            const note = solfegeNotes[index];
             if (!note) return null;
 
-            const isCurrent = offset === 0;
-            const label = convertNoteToSolfege(
-              note.noteName !== 'rest' ? convertSolfegeToNote(note.noteName) : 'rest'
-            );
+            const label =
+              note.noteName === "rest"
+                ? "rest"
+                : convertNoteToSolfege(convertSolfegeToNote(note.noteName));
 
             return (
               <span
-                key={noteIndex}
-                className={`px-2 py-1 rounded text-xl ${isCurrent ? 'bg-yellow-400 font-bold' : 'bg-gray-200'
-                  }`}
+                key={index}
+                className={`px-2 py-1 rounded text-xl ${offset === 0 ? "bg-yellow-400 font-bold" : "bg-gray-200"}`}
               >
                 {label}
               </span>
