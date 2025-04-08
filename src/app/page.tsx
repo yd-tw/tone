@@ -4,18 +4,18 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import * as Tone from 'tone';
 import { solfegeNotes } from './config';
-import { convertSolfegeToNote } from '@/utils/encoder';
+import { convertNoteToSolfege, convertSolfegeToNote } from '@/utils/encoder';
 
 const socket = io('https://socket.zeabur.app');
 
 export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
-  const [isReady, setIsReady] = useState(false); // 加入等待狀態
+  const [isReady, setIsReady] = useState(false);
 
   const prepareAudio = async () => {
     await Tone.start();
-    setIsReady(true); // 解鎖音訊
+    setIsReady(true);
   };
 
   const playMusic = async () => {
@@ -79,7 +79,7 @@ export default function Page() {
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
           onClick={prepareAudio}
         >
-          加入等待（啟用音訊）
+          加入等待
         </button>
       ) : (
         <button
@@ -87,7 +87,7 @@ export default function Page() {
           onClick={handlePlay}
           disabled={isPlaying}
         >
-          播放音樂（同步）
+          開始演奏
         </button>
       )}
 
@@ -99,7 +99,7 @@ export default function Page() {
               key={idx}
               className="bg-yellow-200 text-black px-2 py-1 rounded text-xl"
             >
-              {note}
+              {convertNoteToSolfege(note)}
             </span>
           ))}
         </div>
