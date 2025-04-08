@@ -13,14 +13,16 @@ export default function Page() {
     await Tone.start();
     setIsPlaying(true);
     setNotes([]);
-
+  
     const synth = new Tone.Synth().toDestination();
     const transport = Tone.getTransport();
+    transport.stop();
     transport.cancel();
     transport.timeSignature = [6, 8];
     transport.bpm.value = 90;
+    
     let currentTime = 0;
-
+  
     const part = new Tone.Part((time, note) => {
       const actualNote = convertSolfegeToNote(note.noteName);
       synth.triggerAttackRelease(actualNote, note.duration, time);
@@ -33,14 +35,15 @@ export default function Page() {
       currentTime += Tone.Time(note.duration).toSeconds();
       return event;
     }));
-
+  
     part.start(0);
-
+  
     transport.scheduleOnce(() => {
       setIsPlaying(false);
+      part.dispose();
     }, currentTime);
-
-    transport.start();
+  
+    transport.start("+0.1");
   };
 
   return (
