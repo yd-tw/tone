@@ -10,10 +10,8 @@ const socket = io('https://socket.zeabur.app');
 
 export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [notes, setNotes] = useState<string[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
-  const fullScore = solfegeNotes;
 
   const prepareAudio = async () => {
     await Tone.start();
@@ -23,7 +21,6 @@ export default function Page() {
   const playMusic = async () => {
     setCurrentIndex(-1);
     setIsPlaying(true);
-    setNotes([]);
 
     const synth = new Tone.Synth().toDestination();
     const transport = Tone.getTransport();
@@ -41,12 +38,10 @@ export default function Page() {
         const actualNote = convertSolfegeToNote(note.noteName);
         synth.triggerAttackRelease(actualNote, note.duration, time);
         draw.schedule(() => {
-          setNotes((prev) => [...prev, actualNote]);
           setCurrentIndex((prev) => prev + 1);
         }, time);
       } else {
         draw.schedule(() => {
-          setNotes((prev) => [...prev, "rest"]);
           setCurrentIndex((prev) => prev + 1);
         }, time);
       }
