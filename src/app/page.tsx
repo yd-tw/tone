@@ -32,12 +32,19 @@ export default function Page() {
     let currentTime = 0;
 
     const part = new Tone.Part((time, note) => {
-      const actualNote = convertSolfegeToNote(note.noteName);
-      synth.triggerAttackRelease(actualNote, note.duration, time);
       const draw = Tone.getDraw();
-      draw.schedule(() => {
-        setNotes((prev) => [...prev, actualNote]);
-      }, time);
+    
+      if (note.noteName !== "rest") {
+        const actualNote = convertSolfegeToNote(note.noteName);
+        synth.triggerAttackRelease(actualNote, note.duration, time);
+        draw.schedule(() => {
+          setNotes((prev) => [...prev, actualNote]);
+        }, time);
+      } else {
+        draw.schedule(() => {
+          setNotes((prev) => [...prev, "rest"]);
+        }, time);
+      }
     }, solfegeNotes.map((note) => {
       const event = { time: currentTime, ...note };
       currentTime += Tone.Time(note.duration).toSeconds();
