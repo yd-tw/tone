@@ -11,9 +11,14 @@ const socket = io('https://socket.zeabur.app');
 export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
+  const [isReady, setIsReady] = useState(false); // 加入等待狀態
+
+  const prepareAudio = async () => {
+    await Tone.start();
+    setIsReady(true); // 解鎖音訊
+  };
 
   const playMusic = async () => {
-    await Tone.start();
     setIsPlaying(true);
     setNotes([]);
 
@@ -49,13 +54,13 @@ export default function Page() {
     transport.start("+0.1");
   };
 
-  // 按鈕點擊：傳送播放請求給所有裝置
   const handlePlay = () => {
     socket.emit('play-request', { triggeredAt: Date.now() });
   };
 
-  // 收到廣播播放指令時
   useEffect(() => {
+    if (!isReady) return;
+
     socket.on('play', () => {
       playMusic();
     });
@@ -63,18 +68,28 @@ export default function Page() {
     return () => {
       socket.off('play');
     };
-  }, []);
+  }, [isReady]);
 
   return (
     <main className="p-4">
       <h1 className="text-2xl font-bold mb-4">🎵 音樂播放器</h1>
-      <button
-        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={handlePlay}
-        disabled={isPlaying}
-      >
-        播放音樂（同步）
-      </button>
+
+      {!isReady ? (
+        <button
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+          onClick={prepareAudio}
+        >
+          加入等待（啟用音訊）
+        </button>
+      ) : (
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={handlePlay}
+          disabled={isPlaying}
+        >
+          播放音樂（同步）
+        </button>
+      )}
 
       <div className="mt-6">
         <h2 className="text-xl">目前播放的音符：</h2>
