@@ -74,39 +74,55 @@ export default function Page() {
   }, [isReady]);
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl font-bold mb-4">🎵 音樂播放器</h1>
+    <main className="flex p-6 max-w-2xl mx-auto items-center justify-center min-h-screen">
+      <div className=" bg-white shadow-xl rounded-2xl p-6 ">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+          🎵 音樂播放器
+        </h1>
 
-      <button
-        className={`px-4 py-2 rounded text-white ${isReady ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}`}
-        onClick={isReady ? handlePlay : prepareAudio}
-        disabled={isPlaying}
-      >
-        {isReady ? "開始演奏" : "加入等待"}
-      </button>
+        <div className="flex justify-center mb-8">
+          <button
+            className={`px-6 py-3 rounded-xl font-medium transition-colors duration-300 text-white 
+              ${isReady ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}
+              ${isPlaying && "opacity-50 cursor-not-allowed"}`}
+            onClick={isReady ? handlePlay : prepareAudio}
+            disabled={isPlaying}
+          >
+            {isReady ? "開始演奏" : "加入等待"}
+          </button>
+        </div>
 
-      <div className="mt-6">
-        <h2 className="text-xl">目前播放的音符：</h2>
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {[0, 1, 2].map((offset) => {
-            const index = currentIndex + offset;
-            const note = solfegeNotes[index];
-            if (!note) return null;
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">🎶 目前播放的音符</h2>
 
-            const label =
-              note.noteName === "rest"
-                ? "rest"
-                : convertNoteToSolfege(convertSolfegeToNote(note.noteName));
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[0, 1, 2].map((offset) => {
+              const index = currentIndex + offset;
+              const note = solfegeNotes[index];
+              if (!note) return null;
 
-            return (
-              <span
-                key={index}
-                className={`px-2 py-1 rounded text-xl ${offset === 0 ? "bg-yellow-400 font-bold" : "bg-gray-200"}`}
-              >
-                {label}
-              </span>
-            );
-          })}
+              const label =
+                note.noteName === "rest"
+                  ? "rest"
+                  : convertNoteToSolfege(convertSolfegeToNote(note.noteName));
+
+              return (
+                <div
+                  key={index}
+                  className={`p-4 rounded-xl shadow-md text-center 
+                    ${offset === 0 ? "bg-yellow-100 border-2 border-yellow-400" : "bg-gray-50"}`}
+                >
+                  <div
+                    className={`text-xl font-bold mb-1 
+                      ${offset === 0 ? "text-yellow-600" : "text-gray-700"}`}
+                  >
+                    {label}
+                  </div>
+                  <div className="text-sm text-gray-500">⏱️ {note.duration}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </main>
