@@ -12,6 +12,8 @@ export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
   const [isReady, setIsReady] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
+  const fullScore = solfegeNotes;
 
   const prepareAudio = async () => {
     await Tone.start();
@@ -19,6 +21,7 @@ export default function Page() {
   };
 
   const playMusic = async () => {
+    setCurrentIndex(-1);
     setIsPlaying(true);
     setNotes([]);
 
@@ -33,16 +36,18 @@ export default function Page() {
 
     const part = new Tone.Part((time, note) => {
       const draw = Tone.getDraw();
-    
+
       if (note.noteName !== "rest") {
         const actualNote = convertSolfegeToNote(note.noteName);
         synth.triggerAttackRelease(actualNote, note.duration, time);
         draw.schedule(() => {
           setNotes((prev) => [...prev, actualNote]);
+          setCurrentIndex((prev) => prev + 1);
         }, time);
       } else {
         draw.schedule(() => {
           setNotes((prev) => [...prev, "rest"]);
+          setCurrentIndex((prev) => prev + 1);
         }, time);
       }
     }, solfegeNotes.map((note) => {
@@ -101,14 +106,27 @@ export default function Page() {
       <div className="mt-6">
         <h2 className="text-xl">目前播放的音符：</h2>
         <div className="flex gap-2 mt-2 flex-wrap">
-          {notes.slice(-1).map((note, idx) => (
-            <span
-              key={idx}
-              className="bg-yellow-200 text-black px-2 py-1 rounded text-xl"
-            >
-              {convertNoteToSolfege(note)}
-            </span>
-          ))}
+          {[0, 1, 2].map((offset) => {
+            const noteIndex = currentIndex + offset;
+            const note = solfegeNotes[noteIndex];
+
+            if (!note) return null;
+
+            const isCurrent = offset === 0;
+            const label = convertNoteToSolfege(
+              note.noteName !== 'rest' ? convertSolfegeToNote(note.noteName) : 'rest'
+            );
+
+            return (
+              <span
+                key={noteIndex}
+                className={`px-2 py-1 rounded text-xl ${isCurrent ? 'bg-yellow-400 font-bold' : 'bg-gray-200'
+                  }`}
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
       </div>
     </main>
