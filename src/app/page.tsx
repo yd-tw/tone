@@ -19,8 +19,8 @@ export default function Page() {
   };
 
   const playMusic = async () => {
-    setIsPlaying(true);
     setCurrentIndex(-1);
+    setIsPlaying(true);
 
     const synth = new Tone.Synth().toDestination();
     const transport = Tone.getTransport();
@@ -31,21 +31,25 @@ export default function Page() {
 
     let currentTime = 0;
 
-    const part = new Tone.Part(
-      (time, note) => {
-        const draw = Tone.getDraw();
-        draw.schedule(() => setCurrentIndex((prev) => prev + 1), time);
+    const part = new Tone.Part((time, note) => {
+      const draw = Tone.getDraw();
 
-        if (note.noteName !== "rest") {
-          const actualNote = convertSolfegeToNote(note.noteName);
-          synth.triggerAttackRelease(actualNote, note.duration, time);
-        }
-      },
-      solfegeNotes.map((note) => ({
-        ...note,
-        time: (currentTime += Tone.Time(note.duration).toSeconds()),
-      })),
-    );
+      if (note.noteName !== "rest") {
+        const actualNote = convertSolfegeToNote(note.noteName);
+        synth.triggerAttackRelease(actualNote, note.duration, time);
+        draw.schedule(() => {
+          setCurrentIndex((prev) => prev + 1);
+        }, time);
+      } else {
+        draw.schedule(() => {
+          setCurrentIndex((prev) => prev + 1);
+        }, time);
+      }
+    }, solfegeNotes.map((note) => {
+      const event = { time: currentTime, ...note };
+      currentTime += Tone.Time(note.duration).toSeconds();
+      return event;
+    }));
 
     part.start(0);
 
