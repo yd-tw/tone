@@ -12,13 +12,28 @@ export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
+  const [timeOffset, setTimeOffset] = useState<number>(0); // 本地時間與伺服器的時間差（本地時間 - 伺服器時間）
+
+  // 與伺服器對時
+  const syncServerTime = () => {
+    const start = Date.now();
+    socket.emit("get-server-time", (serverTime: number) => {
+      const end = Date.now();
+      const rtt = end - start;
+      const estimatedServerTime = serverTime + rtt / 2;
+      const offset = estimatedServerTime - end; // 正值表示本機慢，負值表示本機快
+      setTimeOffset(offset);
+      console.log("⏱️ 與伺服器時間差:", offset, "ms");
+    });
+  };
 
   const prepareAudio = async () => {
     await Tone.start();
     setIsReady(true);
+    syncServerTime(); // 準備完成後對時
   };
 
-  const playMusic = async () => {
+  const playMusic = async (startAt: number) => {
     setCurrentIndex(-1);
     setIsPlaying(true);
 
@@ -37,14 +52,11 @@ export default function Page() {
       if (note.noteName !== "rest") {
         const actualNote = convertSolfegeToNote(note.noteName);
         synth.triggerAttackRelease(actualNote, note.duration, time);
-        draw.schedule(() => {
-          setCurrentIndex((prev) => prev + 1);
-        }, time);
-      } else {
-        draw.schedule(() => {
-          setCurrentIndex((prev) => prev + 1);
-        }, time);
       }
+
+      draw.schedule(() => {
+        setCurrentIndex((prev) => prev + 1);
+      }, time);
     }, solfegeNotes.map((note) => {
       const event = { time: currentTime, ...note };
       currentTime += Tone.Time(note.duration).toSeconds();
@@ -58,7 +70,13 @@ export default function Page() {
       part.dispose();
     }, currentTime);
 
-    transport.start("+0.1");
+    // 換算 Tone.js 中的時間點
+    const now = Date.now();
+    const adjustedStart = (startAt - now - timeOffset) / 1000; // 轉為秒
+
+    console.log("🎵 預定播放時間距現在", adjustedStart, "秒");
+
+    transport.start("+" + adjustedStart); // 延遲這個時間啟動
   };
 
   const handlePlay = () => {
@@ -67,11 +85,16 @@ export default function Page() {
 
   useEffect(() => {
     if (!isReady) return;
-    socket.on("play", playMusic);
+
+    // 收到播放事件時啟動播放
+    socket.on("play", ({ startAt }) => {
+      playMusic(startAt);
+    });
+
     return () => {
       socket.off("play");
     };
-  }, [isReady]);
+  }, [isReady, timeOffset]);
 
   return (
     <main className="flex p-6 max-w-2xl mx-auto items-center justify-center min-h-screen">
