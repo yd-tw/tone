@@ -42,7 +42,7 @@ export default function Page() {
     transport.stop();
     transport.cancel();
     transport.timeSignature = [6, 8];
-    transport.bpm.value = 60;
+    transport.bpm.value = 75;
 
     let currentTime = 0;
 
