@@ -2,8 +2,23 @@
 
 import { useState } from "react";
 
-const notesMap = ['sol3', 'ti3', 'do4', 're4', 'mi4', 'fa4', 'sol4', 'la4', 'ti4', 'do5', 're5', 'mi5', 'fa5', 'rest']
-const noteDurations = ['2n','4n', '8n', '16n', '2n.', '4n.', '8n.', '16n.']
+const notesMap = [
+  "sol3",
+  "ti3",
+  "do4",
+  "re4",
+  "mi4",
+  "fa4",
+  "sol4",
+  "la4",
+  "ti4",
+  "do5",
+  "re5",
+  "mi5",
+  "fa5",
+  "rest",
+];
+const noteDurations = ["2n", "4n", "8n", "16n", "2n.", "4n.", "8n.", "16n."];
 
 export default function Home() {
   const [selectedDuration, setSelectedDuration] = useState("4n");

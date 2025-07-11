@@ -46,22 +46,25 @@ export default function Page() {
 
     let currentTime = 0;
 
-    const part = new Tone.Part((time, note) => {
-      const draw = Tone.getDraw();
+    const part = new Tone.Part(
+      (time, note) => {
+        const draw = Tone.getDraw();
 
-      if (note.noteName !== "rest") {
-        const actualNote = convertSolfegeToNote(note.noteName);
-        synth.triggerAttackRelease(actualNote, note.duration, time);
-      }
+        if (note.noteName !== "rest") {
+          const actualNote = convertSolfegeToNote(note.noteName);
+          synth.triggerAttackRelease(actualNote, note.duration, time);
+        }
 
-      draw.schedule(() => {
-        setCurrentIndex((prev) => prev + 1);
-      }, time);
-    }, solfegeNotes.map((note) => {
-      const event = { time: currentTime, ...note };
-      currentTime += Tone.Time(note.duration).toSeconds();
-      return event;
-    }));
+        draw.schedule(() => {
+          setCurrentIndex((prev) => prev + 1);
+        }, time);
+      },
+      solfegeNotes.map((note) => {
+        const event = { time: currentTime, ...note };
+        currentTime += Tone.Time(note.duration).toSeconds();
+        return event;
+      }),
+    );
 
     part.start(0);
 
@@ -116,7 +119,9 @@ export default function Page() {
         </div>
 
         <div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">🎶 目前播放的音符</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+            🎶 目前播放的音符
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[0, 1, 2].map((offset) => {
@@ -141,7 +146,9 @@ export default function Page() {
                   >
                     {label}
                   </div>
-                  <div className="text-sm text-gray-500">⏱️ {note.duration}</div>
+                  <div className="text-sm text-gray-500">
+                    ⏱️ {note.duration}
+                  </div>
                 </div>
               );
             })}
