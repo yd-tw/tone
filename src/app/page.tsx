@@ -100,17 +100,15 @@ export default function Page() {
   }, [isReady, timeOffset]);
 
   return (
-    <main className="flex p-6 max-w-2xl mx-auto items-center justify-center min-h-screen">
-      <div className=" bg-white shadow-xl rounded-2xl p-6 ">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center p-6">
+      <div className="rounded-2xl bg-white p-6 shadow-xl">
+        <h1 className="mb-6 flex items-center gap-2 text-3xl font-semibold text-gray-800">
           🎵 音樂播放器
         </h1>
 
-        <div className="flex justify-center mb-8">
+        <div className="mb-8 flex justify-center">
           <button
-            className={`px-6 py-3 rounded-xl font-medium transition-colors duration-300 text-white 
-              ${isReady ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}
-              ${isPlaying && "opacity-50 cursor-not-allowed"}`}
+            className={`rounded-xl px-6 py-3 font-medium text-white transition-colors duration-300 ${isReady ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"} ${isPlaying && "cursor-not-allowed opacity-50"}`}
             onClick={isReady ? handlePlay : prepareAudio}
             disabled={isPlaying}
           >
@@ -119,11 +117,11 @@ export default function Page() {
         </div>
 
         <div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          <h2 className="mb-4 text-2xl font-semibold text-gray-700">
             🎶 目前播放的音符
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[0, 1, 2].map((offset) => {
               const index = currentIndex + offset;
               const note = solfegeNotes[index];
@@ -137,12 +135,10 @@ export default function Page() {
               return (
                 <div
                   key={index}
-                  className={`p-4 rounded-xl shadow-md text-center 
-                    ${offset === 0 ? "bg-yellow-100 border-2 border-yellow-400" : "bg-gray-50"}`}
+                  className={`rounded-xl p-4 text-center shadow-md ${offset === 0 ? "border-2 border-yellow-400 bg-yellow-100" : "bg-gray-50"}`}
                 >
                   <div
-                    className={`text-xl font-bold mb-1 
-                      ${offset === 0 ? "text-yellow-600" : "text-gray-700"}`}
+                    className={`mb-1 text-xl font-bold ${offset === 0 ? "text-yellow-600" : "text-gray-700"}`}
                   >
                     {label}
                   </div>

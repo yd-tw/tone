@@ -39,13 +39,13 @@ export default function Home() {
   };
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">音符配置工具</h1>
+    <main className="mx-auto max-w-xl p-6">
+      <h1 className="mb-4 text-2xl font-bold">音符配置工具</h1>
 
       <div className="mb-4">
-        <label className="block mb-1 font-semibold">選擇音符長度：</label>
+        <label className="mb-1 block font-semibold">選擇音符長度：</label>
         <select
-          className="p-2 border rounded"
+          className="rounded border p-2"
           value={selectedDuration}
           onChange={(e) => setSelectedDuration(e.target.value)}
         >
@@ -57,12 +57,12 @@ export default function Home() {
         </select>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="mb-4 flex flex-wrap gap-2">
         {notesMap.map((note) => (
           <button
             key={note}
             onClick={() => addNote(note)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             {note}
           </button>
@@ -72,15 +72,15 @@ export default function Home() {
       <div className="mb-6">
         <button
           onClick={removeLastNote}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
         >
           刪除上一個音符
         </button>
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-2">目前的音符配置：</h2>
-        <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
+        <h2 className="mb-2 text-xl font-semibold">目前的音符配置：</h2>
+        <pre className="overflow-x-auto rounded bg-gray-100 p-4">
           {`[ \n  ${noteSequence.map((note) => `{ noteName: "${note.noteName}", duration: "${note.duration}" }`).join(", \n  ")} \n]`}
         </pre>
       </div>
