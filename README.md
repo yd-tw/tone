@@ -1,7 +1,7 @@
 <div align="center">
   <a href="">
     <picture>
-      <img alt="logo" src="" height="64">
+      <img alt="logo" src="/public/logo.png" height="64">
     </picture>
   </a>
   <h1>Tone.js 春日影演奏系統</h1>
