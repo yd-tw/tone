@@ -15,5 +15,5 @@
 
 ## 專案架構
 
-- socket.io
-- tone.js
+- `socket.io`
+- `tone.js`

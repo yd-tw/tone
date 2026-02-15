@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MYGOiiiii冬夜光",
+  title: "跨裝置音樂播放系統",
   description: "如果能累積起一個又一個的音符，也許就能變成一首歌",
 };
 
