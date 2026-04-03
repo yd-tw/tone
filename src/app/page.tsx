@@ -35,54 +35,57 @@ export default function Page() {
     syncServerTime(); // 準備完成後對時
   };
 
-  const playMusic = useCallback(async (startAt: number) => {
-    setCurrentIndex(-1);
-    setIsPlaying(true);
+  const playMusic = useCallback(
+    async (startAt: number) => {
+      setCurrentIndex(-1);
+      setIsPlaying(true);
 
-    const synth = new Tone.Synth().toDestination();
-    const transport = Tone.getTransport();
-    transport.stop();
-    transport.cancel();
-    transport.timeSignature = [6, 8];
-    transport.bpm.value = 75;
+      const synth = new Tone.Synth().toDestination();
+      const transport = Tone.getTransport();
+      transport.stop();
+      transport.cancel();
+      transport.timeSignature = [6, 8];
+      transport.bpm.value = 75;
 
-    let currentTime = 0;
+      let currentTime = 0;
 
-    const part = new Tone.Part(
-      (time, note) => {
-        const draw = Tone.getDraw();
+      const part = new Tone.Part(
+        (time, note) => {
+          const draw = Tone.getDraw();
 
-        if (note.noteName !== "rest") {
-          const actualNote = convertSolfegeToNote(note.noteName);
-          synth.triggerAttackRelease(actualNote, note.duration, time);
-        }
+          if (note.noteName !== "rest") {
+            const actualNote = convertSolfegeToNote(note.noteName);
+            synth.triggerAttackRelease(actualNote, note.duration, time);
+          }
 
-        draw.schedule(() => {
-          setCurrentIndex((prev) => prev + 1);
-        }, time);
-      },
-      solfegeNotes.map((note) => {
-        const event = { time: currentTime, ...note };
-        currentTime += Tone.Time(note.duration).toSeconds();
-        return event;
-      }),
-    );
+          draw.schedule(() => {
+            setCurrentIndex((prev) => prev + 1);
+          }, time);
+        },
+        solfegeNotes.map((note) => {
+          const event = { time: currentTime, ...note };
+          currentTime += Tone.Time(note.duration).toSeconds();
+          return event;
+        }),
+      );
 
-    part.start(0);
+      part.start(0);
 
-    transport.scheduleOnce(() => {
-      setIsPlaying(false);
-      part.dispose();
-    }, currentTime);
+      transport.scheduleOnce(() => {
+        setIsPlaying(false);
+        part.dispose();
+      }, currentTime);
 
-    // 換算 Tone.js 中的時間點
-    const now = Date.now();
-    const adjustedStart = (startAt - now - timeOffset) / 1000;
+      // 換算 Tone.js 中的時間點
+      const now = Date.now();
+      const adjustedStart = (startAt - now - timeOffset) / 1000;
 
-    console.log("預定播放時間距現在", adjustedStart, "秒");
+      console.log("預定播放時間距現在", adjustedStart, "秒");
 
-    transport.start("+" + adjustedStart);
-  }, [timeOffset]);
+      transport.start("+" + adjustedStart);
+    },
+    [timeOffset],
+  );
 
   const handlePlay = () => {
     socket.emit("play-request", { triggeredAt: Date.now() });
@@ -118,10 +121,11 @@ export default function Page() {
 
         <div className="mb-8 flex justify-center">
           <button
-            className={`cursor-pointer rounded-xl px-6 py-3 font-medium text-white transition-colors duration-300 ${isReady
+            className={`cursor-pointer rounded-xl px-6 py-3 font-medium text-white transition-colors duration-300 ${
+              isReady
                 ? "bg-blue-500 hover:bg-blue-600"
                 : "bg-green-500 hover:bg-green-600"
-              } ${isPlaying && "cursor-not-allowed opacity-50"}`}
+            } ${isPlaying && "cursor-not-allowed opacity-50"}`}
             onClick={isReady ? handlePlay : prepareAudio}
             disabled={isPlaying}
           >
@@ -149,14 +153,16 @@ export default function Page() {
               return (
                 <div
                   key={index}
-                  className={`rounded-xl p-4 text-center ${offset === 0
+                  className={`rounded-xl p-4 text-center ${
+                    offset === 0
                       ? "border-2 border-yellow-400 bg-yellow-100"
                       : "bg-gray-50"
-                    }`}
+                  }`}
                 >
                   <div
-                    className={`mb-1 text-xl font-bold ${offset === 0 ? "text-yellow-600" : "text-gray-700"
-                      }`}
+                    className={`mb-1 text-xl font-bold ${
+                      offset === 0 ? "text-yellow-600" : "text-gray-700"
+                    }`}
                   >
                     {label}
                   </div>
